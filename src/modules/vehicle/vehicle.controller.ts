@@ -92,15 +92,35 @@ const updateVehicle = async (req: Request, res: Response) => {
   } = req.body;
 
   try {
-    const result = await VehicleServices.updateVehicle(
-      vehicle_name,
-      type,
-      registration_number,
-      daily_rent_price,
-      availability_status,
+    const currentVehicle = await VehicleServices.getSingleVehicle(
       req.params.vehicleId as string
     );
-    console.log("result: ", result);
+
+    if (currentVehicle.rows.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "Vehicle not Found !",
+      });
+    }
+
+    const current = currentVehicle.rows[0];
+
+    const result = await VehicleServices.updateVehicle(
+      vehicle_name !== undefined ? vehicle_name : current.vehicle_name,
+      type !== undefined ? type : current.type,
+      registration_number !== undefined
+        ? registration_number
+        : current.registration_number,
+      daily_rent_price !== undefined
+        ? daily_rent_price
+        : current.daily_rent_price,
+      availability_status !== undefined
+        ? availability_status
+        : current.availability_status,
+      req.params.vehicleId as string
+    );
+
+    console.log("result:- ", result.rows[0]);
     if (result.rows.length === 0) {
       res.status(404).json({
         success: false,

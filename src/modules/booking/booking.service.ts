@@ -44,6 +44,29 @@ const createBooking = async (payload: IBooking) => {
   return response;
 };
 
+const getAllBooking = async () => {
+  
+  const bookingsResult = await pool.query(`SELECT * FROM bookings`);
+  // console.log(result.rows);
+  const bookingsWithVehicle = await Promise.all(
+    bookingsResult.rows.map(async(booking) =>{
+      const vehicleResult = await pool.query(
+        `SELECT vehicle_name, registration_number FROM vehicles WHERE id = $1`,[booking.vehicle_id]
+      )
+      return {
+        ...booking,
+        vehicle: vehicleResult.rows.length > 0 ? {
+          vehicle_name: vehicleResult.rows[0].vehicle_name,
+          registration_number: vehicleResult.rows[0].registration_number
+        } : {}
+      };
+    })
+  );
+  
+  return { rows: bookingsWithVehicle };
+};
+
 export const BookingServices = {
   createBooking,
+  getAllBooking,
 };
