@@ -90,19 +90,8 @@ const updateVehicle = async (req: Request, res: Response) => {
     daily_rent_price,
     availability_status,
   } = req.body;
-  console.log(
-    "vehicle_name, type, registration_number, daily_rent_price, availability_status: --",
-    vehicle_name,
-    type,
-    registration_number,
-    daily_rent_price,
-    availability_status
-  );
 
   try {
-    const id = req.params.vehicleId;
-    console.log("Req.params.vehicleId: --", id);
-
     const result = await VehicleServices.updateVehicle(
       vehicle_name,
       type,
@@ -159,5 +148,5 @@ export const vehicleControllers = {
   getVehicle,
   getSingleVehicle,
   updateVehicle,
-  deleteVehicle
+  deleteVehicle,
 };

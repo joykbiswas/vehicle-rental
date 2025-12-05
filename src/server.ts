@@ -5,6 +5,7 @@ import path from "path";
 import initDB from "./config/db";
 import { authRoutes } from "./modules/auth/auth.routers";
 import { vehicleRoutes } from "./modules/vehicle/vehicle.routers";
+import { userRoutes } from "./modules/user/user.routers";
 const port = config.port;
 
 dotenv.config({ path: path.join(process.cwd(), ".env") });
@@ -18,7 +19,7 @@ app.get('/', (req: Request, res: Response) => {
   res.send('Hello Developer !!')
 })
 
-// app.use("/users", userRoutes);
+app.use("/api/v1/users", userRoutes);
 
 app.use("/api/v1", vehicleRoutes);
 
