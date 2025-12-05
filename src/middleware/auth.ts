@@ -1,5 +1,4 @@
 import jwt, { JwtPayload }  from 'jsonwebtoken';
-// higher order function return --> function
 
 import { NextFunction, Request, Response } from "express"
 import config from '../config';
@@ -26,7 +25,6 @@ const auth= (...roles: string[]) =>{
         const decoded = jwt.verify(token, config.jwtSecret as string)as JwtPayload;
         console.log({decoded});
         req.user = decoded ;
-        console.log("req.user:--", req.user);
 
         if(roles.length && !roles.includes(decoded.role as string)){
             return res.status(500).json({

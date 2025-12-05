@@ -5,7 +5,7 @@ import { JwtPayload } from "jsonwebtoken";
 const createVehicle = async (req: Request, res: Response) => {
   try {
     const user = req.user as JwtPayload;
-    console.log("user: ", user);
+    // console.log("user: ", user);
     if (user.role === "admin") {
       const result = await VehicleServices.createVehicle(req.body);
 
@@ -14,11 +14,11 @@ const createVehicle = async (req: Request, res: Response) => {
         message: "Vehicle created successfully",
         data: result.rows[0],
       });
-    }else{
-        res.status(403).json({
-            success: false,
-            message: "You are not Allowed !"
-        })
+    } else {
+      res.status(403).json({
+        success: false,
+        message: "You are not Allowed !",
+      });
     }
   } catch (err: any) {
     res.status(500).json({
@@ -55,9 +55,11 @@ const getVehicle = async (req: Request, res: Response) => {
 
 const getSingleVehicle = async (req: Request, res: Response) => {
   try {
-     const id = req.params.vehicleId;
+    const id = req.params.vehicleId;
     console.log("Req.params.vehicleId: --", id);
-    const result = await VehicleServices.getSingleVehicle(req.params.vehicleId as string);
+    const result = await VehicleServices.getSingleVehicle(
+      req.params.vehicleId as string
+    );
 
     console.log("Result: ", result);
     if (result.rows.length === 0) {
@@ -80,64 +82,82 @@ const getSingleVehicle = async (req: Request, res: Response) => {
   }
 };
 
-// const updateUser = async (req: Request, res: Response) => {
-//   const { name, email, phone } = req.body;
+const updateVehicle = async (req: Request, res: Response) => {
+  const {
+    vehicle_name,
+    type,
+    registration_number,
+    daily_rent_price,
+    availability_status,
+  } = req.body;
+  console.log(
+    "vehicle_name, type, registration_number, daily_rent_price, availability_status: --",
+    vehicle_name,
+    type,
+    registration_number,
+    daily_rent_price,
+    availability_status
+  );
 
-//   try {
-//     const result = await userServices.updateUser(
-//       name,
-//       email,
-//       phone,
-//       req.params.id!
-//     );
+  try {
+    const id = req.params.vehicleId;
+    console.log("Req.params.vehicleId: --", id);
 
-//     if (result.rows.length === 0) {
-//       res.status(404).json({
-//         success: false,
-//         message: "User not found",
-//       });
-//     } else {
-//       res.status(200).json({
-//         success: false,
-//         message: "User Updated successfully",
-//         data: result.rows[0],
-//       });
-//     }
-//   } catch (err: any) {
-//     res.status(500).json({
-//       success: false,
-//       message: err.message,
-//     });
-//   }
-// };
+    const result = await VehicleServices.updateVehicle(
+      vehicle_name,
+      type,
+      registration_number,
+      daily_rent_price,
+      availability_status,
+      req.params.vehicleId as string
+    );
+    console.log("result: ", result);
+    if (result.rows.length === 0) {
+      res.status(404).json({
+        success: false,
+        message: "Vehicle not found !",
+      });
+    } else {
+      res.status(200).json({
+        success: true,
+        message: "Vehicle Updated successfully",
+        data: result.rows[0],
+      });
+    }
+  } catch (err: any) {
+    res.status(500).json({
+      success: false,
+      message: err.message,
+    });
+  }
+};
 
-// const deleteUser = async (req: Request, res: Response) => {
-//   try {
-//     const result = await userServices.deleteUser(req.params.id!);
-//     if (result.rowCount === 0) {
-//       res.status(404).json({
-//         success: false,
-//         message: "User not found",
-//       });
-//     } else {
-//       res.status(200).json({
-//         success: true,
-//         message: "User Deleted successfully",
-//         data: result.rows,
-//       });
-//     }
-//   } catch (err: any) {
-//     res.status(500).json({
-//       success: false,
-//       message: err.message,
-//     });
-//   }
-// };
+const deleteVehicle = async (req: Request, res: Response) => {
+  try {
+    const result = await VehicleServices.deleteVehicle(req.params.vehicleId!);
+    if (result.rowCount === 0) {
+      res.status(404).json({
+        success: false,
+        message: "Vehicle not found",
+      });
+    } else {
+      res.status(200).json({
+        success: true,
+        message: "Vehicle Deleted successfully",
+      });
+    }
+  } catch (err: any) {
+    res.status(500).json({
+      success: false,
+      message: err.message,
+    });
+  }
+};
 
 export const vehicleControllers = {
   createVehicle,
   getVehicle,
-  getSingleVehicle
-  //   updateUser,
-  //   deleteUser,
+  getSingleVehicle,
+  updateVehicle,
+  deleteVehicle
 };

@@ -24,10 +24,8 @@ const initDB = async () => {
       vehicle_name VARCHAR(150) NOT NULL,
       type VARCHAR(100) NOT NULL,
       registration_number VARCHAR(200) UNIQUE NOT NULL,
-      daily_rent_price VARCHAR(100) NOT NULL,
-      availability_status VARCHAR(50) NOT NULL,
-      created_at TIMESTAMP DEFAULT NOW(),
-      updated_at TIMESTAMP DEFAULT NOW()
+      daily_rent_price INTEGER NOT NULL,
+      availability_status VARCHAR(50) NOT NULL
       )
       `);
   await pool.query(`
