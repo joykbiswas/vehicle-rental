@@ -6,6 +6,7 @@ import initDB from "./config/db";
 import { authRoutes } from "./modules/auth/auth.routers";
 import { vehicleRoutes } from "./modules/vehicle/vehicle.routers";
 import { userRoutes } from "./modules/user/user.routers";
+import { bookingRoutes } from "./modules/booking/booking.routers";
 const port = config.port;
 
 dotenv.config({ path: path.join(process.cwd(), ".env") });
@@ -24,6 +25,8 @@ app.use("/api/v1/users", userRoutes);
 app.use("/api/v1", vehicleRoutes);
 
 app.use("/api/v1/auth", authRoutes);
+
+app.use("/api/v1/bookings", bookingRoutes);
 
 
 app.use((req, res) =>{
