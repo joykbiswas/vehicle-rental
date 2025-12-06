@@ -44,6 +44,12 @@ const createBooking = async (payload: IBooking) => {
   return response;
 };
 
+
+export const getSingleBooking = async (id: string) => {
+  const result = await pool.query(`SELECT * FROM bookings WHERE id = $1`, [id]);
+  return result;
+};
+
 const getAllBooking = async () => {
   
   const bookingsResult = await pool.query(`SELECT * FROM bookings`);
@@ -52,21 +58,73 @@ const getAllBooking = async () => {
     bookingsResult.rows.map(async(booking) =>{
       const vehicleResult = await pool.query(
         `SELECT vehicle_name, registration_number FROM vehicles WHERE id = $1`,[booking.vehicle_id]
-      )
+      );
+
+      const userResult = await pool.query(
+        `SELECT name, email FROM users WHERE id = $1`,
+        [booking.customer_id]
+      );
       return {
         ...booking,
+        customer: userResult.rows.length > 0 ? {
+          name: userResult.rows[0].name,
+          email: userResult.rows[0].email
+        } : {},
         vehicle: vehicleResult.rows.length > 0 ? {
           vehicle_name: vehicleResult.rows[0].vehicle_name,
           registration_number: vehicleResult.rows[0].registration_number
         } : {}
+        
       };
     })
   );
+
+  
+  
+  return { rows: bookingsWithVehicle };
+};
+const getAllBookingCustomer = async (customerId: number) => {
+  
+  const bookingsResult = await pool.query(`SELECT * FROM bookings WHERE customer_id = $1`,
+    [customerId]
+  );
+  // console.log(result.rows);
+  const bookingsWithVehicle = await Promise.all(
+    bookingsResult.rows.map(async(booking) =>{
+      const vehicleResult = await pool.query(
+        `SELECT vehicle_name, registration_number, type FROM vehicles WHERE id = $1`,[booking.vehicle_id]
+      );
+
+      const { customer_id, ...withOutCustomerId} = booking;
+
+      return {
+        ...withOutCustomerId,
+        vehicle: vehicleResult.rows.length > 0 ? {
+          vehicle_name: vehicleResult.rows[0].vehicle_name,
+          registration_number: vehicleResult.rows[0].registration_number,
+          type: vehicleResult.rows[0].type
+        } : {}
+        
+      };
+    })
+  );
+
+  
   
   return { rows: bookingsWithVehicle };
 };
 
+const updateBookingVehicleStatus = async(vehicleId: string, status: string)=>{
+ const result = await pool.query(
+    `UPDATE vehicles SET availability_status = $1 WHERE id = $2 RETURNING id, availability_status`,
+    [status, vehicleId]
+  );
+  return result;
+}
 export const BookingServices = {
   createBooking,
   getAllBooking,
+  getAllBookingCustomer,
+  updateBookingVehicleStatus,
+  getSingleBooking
 };
