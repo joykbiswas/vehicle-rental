@@ -1,7 +1,5 @@
 import { Request, Response } from "express";
 import { BookingServices } from "./booking.service";
-
-// import { vehicleControllers } from "../vehicle/vehicle.controller";
 import { VehicleServices } from "../vehicle/vehicle.service";
 import { JwtPayload } from "jsonwebtoken";
 
@@ -48,7 +46,7 @@ const getAllBooking = async (req: Request, res: Response) => {
         data: result.rows,
       });
     } else if (currentUser.role === "customer") {
-      // Pass the customer ID to get only their bookings
+      
       const result = await BookingServices.getAllBookingCustomer(
         currentUser.id
       );
@@ -76,10 +74,12 @@ const getAllBooking = async (req: Request, res: Response) => {
 };
 
 const UpdateBookingStatus = async (req: Request, res: Response) => {
+  const {status} = req.body;
   const currentUser = req.user as JwtPayload;
   console.log("Req Body: ", req.body);
   console.log("Req.Params: ", req.params.bookingId);
   try {
+    // show Booking vehicle detail
     const bookingResult = await BookingServices.getSingleBooking(
       req.params.bookingId as string
     );
@@ -105,6 +105,24 @@ const UpdateBookingStatus = async (req: Request, res: Response) => {
       });
     }
 
+    if (currentUser.role === "customer" && status === "cancelled") {
+      const today = new Date();
+      const rentStartDate = new Date(booking.rent_start_date);
+      
+      if (today >= rentStartDate) {
+        return res.status(400).json({
+          success: false,
+          message: "Cannot cancel booking. Booking has already started !",
+        });
+      }
+    }
+
+    const updatedBooking = await BookingServices.updateBookingStatus(
+      req.params.bookingId as string,
+      status 
+    );
+
+
     const vehicleResult = await BookingServices.updateBookingVehicleStatus(
       vehicleID as string,
       "available"
@@ -127,7 +145,7 @@ const UpdateBookingStatus = async (req: Request, res: Response) => {
         rent_start_date: booking.rent_start_date,
         rent_end_date: booking.rent_end_date,
         total_price: booking.total_price,
-        status: "returned",
+        status: updatedBooking.rows[0]?.status || status,
         vehicle: {
           availability_status: vehicleResult.rows[0].availability_status,
         },
@@ -146,7 +164,7 @@ const UpdateBookingStatus = async (req: Request, res: Response) => {
         rent_start_date: booking.rent_start_date,
         rent_end_date: booking.rent_end_date,
         total_price: booking.total_price,
-        status: "cancelled", 
+        status: updatedBooking.rows[0]?.status || status, 
       };
 
       res.status(200).json({

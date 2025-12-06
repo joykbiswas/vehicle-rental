@@ -114,6 +114,14 @@ const getAllBookingCustomer = async (customerId: number) => {
   return { rows: bookingsWithVehicle };
 };
 
+const updateBookingStatus = async(bookingId: string, status: string)=>{
+ const result = await pool.query(
+    `UPDATE bookings SET status = $1 WHERE id = $2 RETURNING id, status`,
+    [status, bookingId]
+  );
+  return result;
+}
+
 const updateBookingVehicleStatus = async(vehicleId: string, status: string)=>{
  const result = await pool.query(
     `UPDATE vehicles SET availability_status = $1 WHERE id = $2 RETURNING id, availability_status`,
@@ -126,5 +134,6 @@ export const BookingServices = {
   getAllBooking,
   getAllBookingCustomer,
   updateBookingVehicleStatus,
+  updateBookingStatus,
   getSingleBooking
 };
