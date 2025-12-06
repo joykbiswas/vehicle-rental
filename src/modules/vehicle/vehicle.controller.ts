@@ -143,7 +143,15 @@ const updateVehicle = async (req: Request, res: Response) => {
 
 const deleteVehicle = async (req: Request, res: Response) => {
   try {
-    const result = await VehicleServices.deleteVehicle(req.params.vehicleId!);
+    const vehicleResult = await VehicleServices.getSingleVehicle(
+      req.params.vehicleId as string
+    );
+
+    console.log("Result: ", vehicleResult.rows[0]);
+
+    const availabilityStatus = vehicleResult.rows[0].availability_status;
+    if (availabilityStatus === 'available') {
+      const result = await VehicleServices.deleteVehicle(req.params.vehicleId!);
     if (result.rowCount === 0) {
       res.status(404).json({
         success: false,
@@ -155,6 +163,13 @@ const deleteVehicle = async (req: Request, res: Response) => {
         message: "Vehicle Deleted successfully",
       });
     }
+    } else {
+      res.status(400).json({
+        success: false,
+        message: "This Vehicle already Booked !"
+      })
+    }
+    
   } catch (err: any) {
     res.status(500).json({
       success: false,
