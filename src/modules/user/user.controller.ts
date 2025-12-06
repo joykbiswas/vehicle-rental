@@ -10,7 +10,6 @@ const getUser = async (req: Request, res: Response) => {
       const { password, ...removesPass } = user;
       return removesPass;
     });
-    console.log("removePass", removePass);
 
     res.status(200).json({
       success: true,

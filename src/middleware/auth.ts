@@ -13,6 +13,7 @@ const auth= (...roles: string[]) =>{
                 message: "Authorization missing, You are not allowed !"
             })
         }
+        console.log("authToken:", authToken);
         const token = authToken.split(" ")[1];
         
         if(!token){

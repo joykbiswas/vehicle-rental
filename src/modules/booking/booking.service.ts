@@ -8,10 +8,8 @@ const createBooking = async (payload: IBooking) => {
   const vehicleResult = await VehicleServices.getSingleVehicle(
     vehicle_id.toString()
   );
-  // console.log("vehicleResult", vehicleResult);
-
+ 
   const vehicle = vehicleResult.rows[0];
-  console.log("Vehicle: ", vehicle);
 
   if (vehicleResult.rows.length === 0) {
     throw new Error("Vehicle not found");
@@ -53,7 +51,7 @@ export const getSingleBooking = async (id: string) => {
 const getAllBooking = async () => {
   
   const bookingsResult = await pool.query(`SELECT * FROM bookings`);
-  // console.log(result.rows);
+ 
   const bookingsWithVehicle = await Promise.all(
     bookingsResult.rows.map(async(booking) =>{
       const vehicleResult = await pool.query(
@@ -88,7 +86,7 @@ const getAllBookingCustomer = async (customerId: number) => {
   const bookingsResult = await pool.query(`SELECT * FROM bookings WHERE customer_id = $1`,
     [customerId]
   );
-  // console.log(result.rows);
+ 
   const bookingsWithVehicle = await Promise.all(
     bookingsResult.rows.map(async(booking) =>{
       const vehicleResult = await pool.query(

@@ -26,7 +26,6 @@ const createBooking = async (req: Request, res: Response) => {
 
 const getAllBooking = async (req: Request, res: Response) => {
   const currentUser = req.user as JwtPayload;
-  console.log("currentUser", currentUser);
 
   try {
     if (currentUser.role === "admin") {
@@ -76,14 +75,12 @@ const getAllBooking = async (req: Request, res: Response) => {
 const UpdateBookingStatus = async (req: Request, res: Response) => {
   const {status} = req.body;
   const currentUser = req.user as JwtPayload;
-  console.log("Req Body: ", req.body);
-  console.log("Req.Params: ", req.params.bookingId);
+  
   try {
     // show Booking vehicle detail
     const bookingResult = await BookingServices.getSingleBooking(
       req.params.bookingId as string
     );
-    console.log("Booking Result:", bookingResult.rows[0]);
 
     if (bookingResult.rows.length === 0) {
       return res.status(404).json({
@@ -128,8 +125,6 @@ const UpdateBookingStatus = async (req: Request, res: Response) => {
       "available"
     );
 
-    console.log("V Result: ", vehicleResult.rows);
-
     if (vehicleResult.rows.length === 0) {
       return res.status(404).json({
         success: false,
@@ -159,7 +154,6 @@ const UpdateBookingStatus = async (req: Request, res: Response) => {
     } else if (currentUser.role === "customer") {
       const responseData = {
         id: booking.id,
-        customer_id: booking.customer_id,
         vehicle_id: booking.vehicle_id,
         rent_start_date: booking.rent_start_date,
         rent_end_date: booking.rent_end_date,

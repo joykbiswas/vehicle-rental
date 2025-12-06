@@ -9,7 +9,6 @@ const createVehicle = async (payload: IVehicle) => {
     [vehicle_name, type, registration_number, daily_rent_price, availability_status,]
   );
 
-  console.log("result", result);
   return result;
 };
 

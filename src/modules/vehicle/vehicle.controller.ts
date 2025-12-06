@@ -5,7 +5,7 @@ import { JwtPayload } from "jsonwebtoken";
 const createVehicle = async (req: Request, res: Response) => {
   try {
     const user = req.user as JwtPayload;
-    // console.log("user: ", user);
+   
     if (user.role === "admin") {
       const result = await VehicleServices.createVehicle(req.body);
 
@@ -56,12 +56,11 @@ const getVehicle = async (req: Request, res: Response) => {
 const getSingleVehicle = async (req: Request, res: Response) => {
   try {
     const id = req.params.vehicleId;
-    console.log("Req.params.vehicleId: --", id);
+    
     const result = await VehicleServices.getSingleVehicle(
       req.params.vehicleId as string
     );
 
-    console.log("Result: ", result);
     if (result.rows.length === 0) {
       res.status(404).json({
         success: false,
@@ -120,7 +119,6 @@ const updateVehicle = async (req: Request, res: Response) => {
       req.params.vehicleId as string
     );
 
-    console.log("result:- ", result.rows[0]);
     if (result.rows.length === 0) {
       res.status(404).json({
         success: false,
@@ -146,8 +144,6 @@ const deleteVehicle = async (req: Request, res: Response) => {
     const vehicleResult = await VehicleServices.getSingleVehicle(
       req.params.vehicleId as string
     );
-
-    console.log("Result: ", vehicleResult.rows[0]);
 
     const availabilityStatus = vehicleResult.rows[0].availability_status;
     if (availabilityStatus === 'available') {
