@@ -3,6 +3,7 @@ import config from "./config";
 import dotenv from "dotenv";
 import path from "path";
 import initDB from "./config/db";
+import "./utils/cronJobs";
 import { authRoutes } from "./modules/auth/auth.routers";
 import { vehicleRoutes } from "./modules/vehicle/vehicle.routers";
 import { userRoutes } from "./modules/user/user.routers";
